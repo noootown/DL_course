@@ -11,7 +11,7 @@ x_data = np.linspace(-1,1,600)[:, np.newaxis]
 noise = np.random.normal(0, 0.3, x_data.shape)
 y_data = np.square(x_data + 0.5) + noise
 
-lr = 0.1 # learning rate
+lr = 0.01 # learning rate
 
 # define placeholder for inputs to network
 xs = tf.placeholder(tf.float32, [None, 1])
