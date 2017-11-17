@@ -1,5 +1,9 @@
 import tensorflow as tf
 import time
+import matplotlib.pyplot as plt
+import matplotlib
+import numpy as np
+matplotlib.use('Agg')
 from tensorflow.examples.tutorials.mnist import input_data
 
 # read mnist data from tensorflow example
@@ -74,7 +78,7 @@ with tf.Session(config=tf.ConfigProto()) as sess:
     x_train, y_train = mnist.train.next_batch(batch_size)
     train.run(feed_dict={x: x_train, y: y_train, keep_prob: 0.5})
 
-    if i % 50 == 0:
+    if i % 100 == 0:
       acc, l = sess.run([accuracy, loss], feed_dict={x: x_train, y: y_train, keep_prob: 1.0})
       print('Step %d, accuracy %.2f, loss %.2f' % (i, acc, l))
       summary = sess.run(merged, feed_dict={x: x_train, y: y_train, keep_prob: 1.0})
@@ -85,3 +89,21 @@ with tf.Session(config=tf.ConfigProto()) as sess:
   acc_test = sess.run(accuracy, feed_dict={x: x_test, y: y_test, keep_prob: 1.0})
   print('Test accuracy %.2f' % acc_test)
   print('Spend %.2f sec' % (toc - tic))
+
+  img_l1, img_l2 = sess.run([h_pool1, h_pool2], feed_dict={x: x_train[:1], y: y_test[:1], keep_prob: 1.0})
+
+  img_l1 = np.transpose(img_l1[0], (2, 0, 1))
+  img_l2 = np.transpose(img_l2[0], (2, 0, 1))
+
+  fig = plt.figure(figsize=(16,16))
+
+  for i, im in enumerate(img_l1):
+    ax = fig.add_subplot(6,6,i+1)
+    ax.matshow(im, cmap = plt.get_cmap('gray'))
+  plt.show()
+
+  fig = plt.figure(figsize=(16,16))
+  for i, im in enumerate(img_l2):
+    ax = fig.add_subplot(8,8,i+1)
+    ax.matshow(im, cmap = plt.get_cmap('gray'))
+  plt.show()
