@@ -120,22 +120,13 @@ with tf.Session() as session:
         step += 1
         offset += (n_input+1)
     
-    while True: 
-        sentence = 'long ago ,'
-        words = sentence.split(' ')
-        if len(words) != n_input:
-            continue
-        try:
-            symbols_in_keys = [dictionary[str(words[i])] for i in range(len(words))]
-            for i in range(32):
-                keys = np.reshape(np.array(symbols_in_keys), [-1, n_input, 1])
-                onehot_pred = session.run(pred, feed_dict={x: keys})
-                onehot_pred_index = int(tf.argmax(onehot_pred, 1).eval())
-                sentence = "%s %s" % (sentence,reverse_dictionary[onehot_pred_index])
-                symbols_in_keys = symbols_in_keys[1:]
-                symbols_in_keys.append(onehot_pred_index)
-            print(sentence)
-        except Exception as e:
-            print(e)
-	    break
+    sentence = 'long ago ,'
+    symbols_in_keys = [dictionary[word] for word in sentence.split(' ')]
+    for i in range(len(training_data) - n_input):
+        keys = np.reshape(np.array(symbols_in_keys[-n_input:]), [-1, n_input, 1])
+        onehot_pred = session.run(pred, feed_dict={x: keys})
+        onehot_pred_index = int(tf.argmax(onehot_pred, 1).eval())
+        symbols_in_keys.append(onehot_pred_index)
+    print(' '.join([reverse_dictionary[key] for key in symbols_in_keys]))
+
     
